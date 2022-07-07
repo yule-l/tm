@@ -1,0 +1,3 @@
+.PHONY: cover
+cover:
+	go test -race -covermode=atomic -coverprofile=coverage.out ./...
