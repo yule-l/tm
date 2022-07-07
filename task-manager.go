@@ -50,6 +50,14 @@ func NewTasksManager(cfg Config) (*taskManager, error) {
 
 // Next returns task from queue and notasks variable, if notasks is true, queue is empty
 func (t *taskManager) Next() (task string, notasks bool) {
+	task, notasks = t.nextQueueTask()
+	if notasks {
+		return t.nextDelayedTask()
+	}
+	return task, false
+}
+
+func (t *taskManager) nextQueueTask() (task string, notasks bool) {
 	for t.tasksQueue.Scan() {
 		task := t.tasksQueue.Text()
 		r, ok := t.tasksInfo.load(task)
@@ -67,7 +75,7 @@ func (t *taskManager) Next() (task string, notasks bool) {
 		}
 		return task, false
 	}
-	return t.nextDelayedTask()
+	return "", true
 }
 
 func (t *taskManager) nextDelayedTask() (task string, notasks bool) {

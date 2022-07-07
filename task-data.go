@@ -84,12 +84,6 @@ func (t *tasks) load(task string) (r result, ok bool) {
 	return r, ok
 }
 
-func (t *tasks) delete(task string) {
-	t.mu.Lock()
-	delete(t.data, task)
-	t.mu.Unlock()
-}
-
 type taskStatus uint8
 
 const (
