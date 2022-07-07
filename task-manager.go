@@ -15,10 +15,11 @@ type TaskManager interface {
 }
 
 type taskManager struct {
-	tasksInfo   *tasks
-	tasksQueue  *bufio.Scanner
-	tasksResult io.ReadWriter
-	maxAttempts uint8
+	tasksInfo    *tasks
+	delayedTasks *delayedTasks
+	tasksQueue   *bufio.Scanner
+	tasksResult  io.ReadWriter
+	maxAttempts  uint8
 }
 
 // NewTasksManager will create task manager, open tasks file, open done file, preload data from done file
@@ -39,10 +40,11 @@ func NewTasksManager(cfg Config) (*taskManager, error) {
 	}
 
 	return &taskManager{
-		tasksInfo:   loadTasksInfo(doneFile),
-		tasksQueue:  queueFile,
-		tasksResult: doneFile,
-		maxAttempts: cfg.MaxRetries,
+		tasksInfo:    loadTasksInfo(doneFile),
+		delayedTasks: newDelayedTasks(),
+		tasksQueue:   queueFile,
+		tasksResult:  doneFile,
+		maxAttempts:  cfg.MaxRetries,
 	}, nil
 }
 
@@ -65,7 +67,31 @@ func (t *taskManager) Next() (task string, notasks bool) {
 		}
 		return task, false
 	}
-	return "", true
+	return t.nextDelayedTask()
+}
+
+func (t *taskManager) nextDelayedTask() (task string, notasks bool) {
+	for {
+		task, cursor, ok := t.delayedTasks.next()
+		if !ok {
+			return "", true
+		}
+		r, ok := t.tasksInfo.load(task)
+		if ok {
+			if r.Status == done {
+				t.delayedTasks.unset(cursor)
+				continue
+			}
+		} else {
+			t.tasksInfo.store(task, result{
+				Payload: task,
+				Attempt: 0,
+				Errors:  nil,
+				Status:  inProgress,
+			})
+		}
+		return task, false
+	}
 }
 
 // Finish marks task as done
@@ -85,15 +111,10 @@ func (t *taskManager) writeResult(task string, e error) error {
 	r.Payload = task
 	r.Attempt++
 
-	if e != nil {
-		r.Errors = append(r.Errors, rerr{
-			Attempt:   r.Attempt,
-			Message:   e.Error(),
-			Timestamp: time.Now(),
-		})
-		if r.Attempt < t.maxAttempts {
-			r.Status = delay
-		}
+	t.fillResultsWithErrorIfNotNil(&r, e)
+
+	if r.Status == delay {
+		t.delayedTasks.append(task)
 	}
 
 	t.tasksInfo.store(task, r)
@@ -103,4 +124,18 @@ func (t *taskManager) writeResult(task string, e error) error {
 	}
 	_, err = t.tasksResult.Write(append(rb, []byte("\n")...))
 	return err
+}
+
+func (t *taskManager) fillResultsWithErrorIfNotNil(r *result, e error) {
+	if e == nil {
+		return
+	}
+	r.Errors = append(r.Errors, rerr{
+		Attempt:   r.Attempt,
+		Message:   e.Error(),
+		Timestamp: time.Now(),
+	})
+	if r.Attempt < t.maxAttempts {
+		r.Status = delay
+	}
 }
