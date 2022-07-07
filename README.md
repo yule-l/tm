@@ -1,4 +1,4 @@
-# tm – task manager
+# tm – task manager
 [![GoDoc](https://pkg.go.dev/badge/github.com/yule-l/tm)](https://pkg.go.dev/github.com/yule-l/tm)
 [![Go](https://github.com/yule-l/tm/actions/workflows/go.yml/badge.svg)](https://github.com/yule-l/tm/actions/workflows/go.yml)
 [![codecov](https://codecov.io/gh/yule-l/tm/branch/master/graph/badge.svg?token=ZRL9IO6JNC)](https://codecov.io/gh/yule-l/tm)
@@ -30,6 +30,19 @@ import "github.com/yule-l/tm"
 ```
 
 ## Quick Start
+
+Just use doer
+```go
+taskManager, _ := tm.NewTasksManager(tm.NewDefaultConfig("tasks.txt"))
+doer := tm.NewDefaultDoer(taskManager)
+
+doer.Do(func(task string) error {
+	// do something
+	return nil
+})
+```
+
+or you can use task manager more specifically
 
 ```go
 taskManager, _ := tm.NewTasksManager(tm.NewDefaultConfig("tasks.txt"))

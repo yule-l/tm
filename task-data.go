@@ -46,11 +46,11 @@ const unsetValue = "$#%unset$#%"
 
 func (d *delayedTasks) unset(id int) {
 	d.mu.Lock()
+	defer d.mu.Unlock()
 	if id > len(d.data)-1 {
 		return
 	}
 	d.data[id] = unsetValue
-	d.mu.Unlock()
 }
 
 func (d *delayedTasks) reset() {

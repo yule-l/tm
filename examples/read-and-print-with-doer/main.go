@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/yule-l/tm"
 )
@@ -27,23 +26,15 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	for {
-		task, nodata := taskManager.Next()
-		if nodata {
-			return
-		}
-		task = strings.Trim(task, " ")
-		fmt.Println(task)
+	doer := tm.NewDefaultDoer(taskManager)
+	doer.Do(func(task string) error {
 		if task == "error" {
 			err = taskManager.Error(task, errors.New("some error"))
 			if err != nil {
 				log.Println(err)
 			}
-			continue
 		}
-		err = taskManager.Finish(task)
-		if err != nil {
-			log.Println(err)
-		}
-	}
+		fmt.Println(task)
+		return nil
+	})
 }
