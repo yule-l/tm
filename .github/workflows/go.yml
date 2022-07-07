@@ -34,3 +34,7 @@ jobs:
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
+      
+    - name: Go proxy warming
+      uses: andrewslotin/go-proxy-pull-action@v1.0.3
+
