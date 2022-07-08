@@ -14,6 +14,7 @@ The simplest task manager library in Go.
 * Read tasks line by line from file
 * Mark tasks as completed
 * Mark tasks as not completed and try complete this N times in the future
+* Preconfigured structs for parallel and ordered tasks executions
 
 ## Installation
 
