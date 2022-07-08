@@ -30,8 +30,11 @@ jobs:
       uses: golangci/golangci-lint-action@v3.2.0
 
     - name: Cover
-      run: go test -race -covermode=atomic -coverprofile=coverage.out ./...
+      run: make cover
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
+      
+    - name: Warnup
+      run: make update-go-ref
 
