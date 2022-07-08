@@ -31,16 +31,33 @@ import "github.com/yule-l/tm"
 
 ## Quick Start
 
-Just use doer
-```go
-taskManager, _ := tm.NewTasksManager(tm.NewDefaultConfig("tasks.txt"))
-doer := tm.NewDefaultDoer(taskManager)
+### Doers
+Doer is a simple way to run your tasks in ordered, parallel or something else way, you can control them by `context.Context`.
 
-doer.Do(func(task string) error {
-	// do something
+#### Parallel Doer
+```go
+ctx := context.Background()
+taskManager, _ := tm.NewTasksManager(tm.NewDefaultConfig("tasks.txt"))
+doer := tm.NewDefaultParallelDoer(taskManager)
+doer.Do(ctx, func(ctx context.Context, task string) error {
+	// do tasks in goroutines
 	return nil
 })
 ```
+
+#### Ordered Doer
+```go
+ctx := context.Background()
+taskManager, _ := tm.NewTasksManager(tm.NewDefaultConfig("tasks.txt"))
+doer := tm.NewDefaultOrderedDoer(taskManager)
+
+doer.Do(ctx, func(ctx context.Context, task string) error {
+	// do task one by one
+	return nil
+})
+```
+
+### Custom
 
 or you can use task manager more specifically
 

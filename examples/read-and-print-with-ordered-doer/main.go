@@ -29,7 +29,7 @@ func main() {
 	}
 
 	doer := tm.NewDefaultParallelDoer(taskManager)
-	doer.Do(ctx, func(task string) error {
+	doer.Do(ctx, func(ctx context.Context, task string) error {
 		if task == "error" {
 			err = taskManager.Error(task, errors.New("some error"))
 			if err != nil {
