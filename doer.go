@@ -13,6 +13,8 @@ type Doer interface {
 	Do(ctx context.Context, f func(ctx context.Context, task string) error)
 }
 
+var _ Doer = (*ParallelDoer)(nil)
+
 // ParallelDoer is a simple and powerful way to do your tasks fast.
 type ParallelDoer struct {
 	tm               TaskManager
@@ -98,6 +100,8 @@ func (d *ParallelDoer) consumer(
 	wg.Wait()
 }
 
+var _ Doer = (*OrderedDoer)(nil)
+
 // OrderedDoer is a simple and powerful way to do your tasks in strict order.
 type OrderedDoer struct {
 	tm         TaskManager
@@ -147,4 +151,3 @@ func (d *OrderedDoer) Do(ctx context.Context, f func(ctx context.Context, task s
 		_ = d.tm.Finish(task)
 	}
 }
-

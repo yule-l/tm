@@ -14,6 +14,8 @@ type TaskManager interface {
 	Error(task string, e error) error
 }
 
+var _ TaskManager = (*taskManager)(nil)
+
 type taskManager struct {
 	tasksInfo    *tasks
 	delayedTasks *delayedTasks
