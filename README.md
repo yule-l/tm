@@ -80,6 +80,8 @@ for {
 }
 ```
 
+Also see the [documentation](https://pkg.go.dev/github.com/yule-l/tm) 
+
 ## Examples
 
 See [examples](examples)
