@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -17,6 +18,7 @@ var (
 
 func main() {
 	flag.Parse()
+	ctx := context.Background()
 	taskManager, err := tm.NewTasksManager(tm.Config{
 		Force:      *force,
 		FilePath:   *tasksFilePath,
@@ -26,8 +28,8 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	doer := tm.NewDefaultDoer(taskManager)
-	doer.Do(func(task string) error {
+	doer := tm.NewDefaultParallelDoer(taskManager)
+	doer.Do(ctx, func(task string) error {
 		if task == "error" {
 			err = taskManager.Error(task, errors.New("some error"))
 			if err != nil {
