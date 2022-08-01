@@ -4,87 +4,33 @@
 [![codecov](https://codecov.io/gh/yule-l/tm/branch/master/graph/badge.svg?token=ZRL9IO6JNC)](https://codecov.io/gh/yule-l/tm)
 [![Go Report Card](https://goreportcard.com/badge/github.com/yule-l/tm)](https://goreportcard.com/report/github.com/yule-l/tm)
 
-The simplest task manager library in Go.
+The simplest task manager in Go.
 
 ## Overview
 
-`tm` is a library providing a simple mechanism for tasks control. 
+You can use `tm` as a library or as a cli manager, ones providing a simple mechanism for tasks control.
 
 ### Features
+* Command Line Interface – use cli to do your tasks
 * Read tasks line by line from file
 * Mark tasks as completed
 * Mark tasks as not completed and try complete this N times in the future
 * Preconfigured structs for parallel and ordered tasks executions
 
-## Installation
+## CLI Installing
 
-If you want to install the latest version of the library, try this line:
+Install `tm` by running:
 
 ```shell
-go get -u github.com/yule-l/tm@latest
+go install github.com/yule-l/tm/cmd/tm@latest
 ```
 
-Then import `tm` in your code
+## Documentation
+- [CLI][]
+- [Library][]
 
-```go
-import "github.com/yule-l/tm"
-```
-
-## Quick Start
-
-### Doers
-Doer is a simple way to run your tasks in ordered, parallel or something else way, you can control them by `context.Context`.
-
-#### Parallel Doer
-```go
-ctx := context.Background()
-taskManager, _ := tm.NewTasksManager(tm.NewDefaultConfig("tasks.txt"))
-doer := tm.NewDefaultParallelDoer(taskManager)
-doer.Do(ctx, func(ctx context.Context, task string) error {
-	// do tasks in goroutines
-	return nil
-})
-```
-
-#### Ordered Doer
-```go
-ctx := context.Background()
-taskManager, _ := tm.NewTasksManager(tm.NewDefaultConfig("tasks.txt"))
-doer := tm.NewDefaultOrderedDoer(taskManager)
-
-doer.Do(ctx, func(ctx context.Context, task string) error {
-	// do task one by one
-	return nil
-})
-```
-
-### Custom
-
-or you can use task manager more specifically
-
-```go
-taskManager, _ := tm.NewTasksManager(tm.NewDefaultConfig("tasks.txt"))
-
-for {
-    task, nodata := taskManager.Next()
-    if nodata {
-        return
-    }
-    err := doTask(task)
-	if err != nil {
-		taskManager.Error(task, err)
-		continue
-    }
-	
-    taskManager.Finish(task)
-}
-```
-
-Also see the [documentation](https://pkg.go.dev/github.com/yule-l/tm) 
-
-## Examples
-
-See [examples](examples)
+[CLI]: ./docs/cli/README.md
+[Library]: ./docs/lib/README.md
 
 ## License
 
