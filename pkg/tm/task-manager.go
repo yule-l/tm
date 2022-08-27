@@ -3,6 +3,7 @@ package tm
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"io"
 	"time"
 )
@@ -24,28 +25,66 @@ type taskManager struct {
 	maxAttempts  uint8
 }
 
+const DefaultMaxRetries = 5
+
+// Config is a configuration for task manager
+type Config struct {
+	// Force will truncate file with tasks results
+	Force bool
+
+	// FilePath must contain tasks file path
+	FilePath string
+
+	// MaxRetries maximum number of attempts to complete the task
+	// If number of attempts reaches MaxRetries, task will be marked as completed with errors
+	MaxRetries uint8
+}
+
+// NewDefaultConfig returns default config
+func NewDefaultConfig(filePath string) *Config {
+	return &Config{
+		Force:      false,
+		FilePath:   filePath,
+		MaxRetries: DefaultMaxRetries,
+	}
+}
+
+var (
+	ErrEmptyFilePath    = errors.New("FilePath can't be empty string")
+	ErrMaxRetriesIsZero = errors.New("MaxRetries can't be less than 1")
+)
+
+func (c *Config) Validate() error {
+	if c.FilePath == "" {
+		return ErrEmptyFilePath
+	}
+	if c.MaxRetries == 0 {
+		return ErrMaxRetriesIsZero
+	}
+	return nil
+}
+
 // NewTasksManager will create task manager, open tasks file, open done file, preload data from done file
 func NewTasksManager(cfg Config) (*taskManager, error) {
-	err := cfg.validate()
+	err := cfg.Validate()
 	if err != nil {
 		return nil, err
 	}
 
-	doneFile, err := openDoneFile(cfg.FilePath, cfg.Force)
+	tfm, err := newTasksFileManager()
 	if err != nil {
 		return nil, err
 	}
-
-	queueFile, err := openQueueFile(cfg.FilePath)
+	done, tasksInfo, queue, err := tfm.setup(cfg)
 	if err != nil {
 		return nil, err
 	}
 
 	return &taskManager{
-		tasksInfo:    loadTasksInfo(doneFile),
+		tasksInfo:    tasksInfo,
 		delayedTasks: newDelayedTasks(),
-		tasksQueue:   queueFile,
-		tasksResult:  doneFile,
+		tasksQueue:   queue,
+		tasksResult:  done,
 		maxAttempts:  cfg.MaxRetries,
 	}, nil
 }

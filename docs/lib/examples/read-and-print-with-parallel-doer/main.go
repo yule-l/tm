@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/yule-l/tm"
+	"github.com/yule-l/tm/pkg/tm"
 )
 
 var (

@@ -1,6 +1,10 @@
 package tm
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/yule-l/tm/pkg/tm"
+)
 
 func TestConfig_validate(t *testing.T) {
 	type fields struct {
@@ -40,7 +44,7 @@ func TestConfig_validate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Config{
+			c := &tm.Config{
 				Force:      tt.fields.Force,
 				FilePath:   tt.fields.FilePath,
 				MaxRetries: tt.fields.MaxRetries,

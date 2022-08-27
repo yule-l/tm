@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/yule-l/tm"
+	"github.com/yule-l/tm/pkg/tm"
 )
 
 var (
