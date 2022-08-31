@@ -49,7 +49,7 @@ func TestConfig_validate(t *testing.T) {
 				FilePath:   tt.fields.FilePath,
 				MaxRetries: tt.fields.MaxRetries,
 			}
-			if err := c.validate(); (err != nil) != tt.wantErr {
+			if err := c.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("validate() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
