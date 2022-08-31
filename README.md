@@ -17,6 +17,11 @@ You can use `tm` as a library or as a cli manager, ones providing a simple mecha
 * Mark tasks as not completed and try complete this N times in the future
 * Preconfigured structs for parallel and ordered tasks executions
 
+### Further Improvements
+- Live statistics about tasks execution
+- Dockerize
+- Analyze executed tasks (time, memory, status, etc...) and draw tables
+
 ## CLI Installing
 
 Install `tm` by running:
