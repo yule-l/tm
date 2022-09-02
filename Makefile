@@ -6,7 +6,7 @@ cover:
 
 .PHONY: update-go-ref ## Update go ref
 update-go-ref:
-	GOPROXY=https://proxy.golang.org GO111MODULE=on go install github.com/yule-l/tm
+	GOPROXY=https://proxy.golang.org GO111MODULE=on go install github.com/yule-l/tm/cmd/tm
 
 .PHONY: build
 build: ## Build application
